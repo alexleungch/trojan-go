@@ -2,14 +2,38 @@
 # Compiled and build artifacts
 *.o
 *.obj
+*.a
+*.so
+*.dll
+*.exe
 *.out
+
 # Dependencies
 vendor/
+ glide.lock
+
 # Logs and temp files
 *.log
 *.tmp
+*.swp
+
 # Environment
 .env
 .env.local
 *.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Go specific
+*.test
+*.prof
+go.mod
+go.sum
 ```
