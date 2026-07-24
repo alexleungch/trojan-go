@@ -6,7 +6,7 @@ import (
 	"github.com/p4gefau1t/trojan-go/tunnel"
 )
 
-const Name = "QUIC"
+const Name = "HTTP3"
 
 type Tunnel struct{}
 
@@ -25,4 +25,3 @@ func (*Tunnel) NewClient(ctx context.Context, underlay tunnel.Client) (tunnel.Cl
 func init() {
 	tunnel.RegisterTunnel(Name, &Tunnel{})
 }
-

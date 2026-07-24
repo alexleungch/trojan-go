@@ -223,24 +223,6 @@ func TestNewShareInfoFromURL_Encryption_None(t *testing.T) {
 	assert.Nil(t, e, "should support none encryption")
 }
 
-func TestNewShareInfoFromURL_Encryption_SS_NotSupportedMethods(t *testing.T) {
-	invalidMethods := []string{"rc4-md5", "rc4", "des-cfb", "table", "salsa20-ctr"}
-	for _, invalidMethod := range invalidMethods {
-		_, e := NewShareInfoFromURL(fmt.Sprintf("trojan-go://a@b.c?encryption=ss%%3B%s%%3Ashabi", invalidMethod))
-		assert.Error(t, e, "encryption %s should not be supported by ss", invalidMethod)
-	}
-}
-
-func TestNewShareInfoFromURL_Encryption_SS_NoPassword(t *testing.T) {
-	_, e := NewShareInfoFromURL("trojan-go://a@b.c?encryption=ss%3Baes-256-gcm%3A")
-	assert.Error(t, e, "empty ss password should not be allowed")
-}
-
-func TestNewShareInfoFromURL_Encryption_SS_BadParams(t *testing.T) {
-	_, e := NewShareInfoFromURL("trojan-go://a@b.c?encryption=ss%3Ba")
-	assert.Error(t, e, "broken ss param should not be allowed")
-}
-
 func TestNewShareInfoFromURL_Encryption_Multiple(t *testing.T) {
 	_, e := NewShareInfoFromURL("trojan-go://a@b.c?encryption=a&encryption=b&encryption=c")
 	assert.Error(t, e, "multiple encryption should not be allowed")

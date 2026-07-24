@@ -8,8 +8,9 @@ import (
 	"github.com/p4gefau1t/trojan-go/proxy/client"
 	"github.com/p4gefau1t/trojan-go/tunnel/freedom"
 	"github.com/p4gefau1t/trojan-go/tunnel/mux"
+	"github.com/p4gefau1t/trojan-go/tunnel/quic"
+	"github.com/p4gefau1t/trojan-go/tunnel/reality"
 	"github.com/p4gefau1t/trojan-go/tunnel/router"
-	"github.com/p4gefau1t/trojan-go/tunnel/shadowsocks"
 	"github.com/p4gefau1t/trojan-go/tunnel/simplesocks"
 	"github.com/p4gefau1t/trojan-go/tunnel/tls"
 	"github.com/p4gefau1t/trojan-go/tunnel/transport"
@@ -42,24 +43,32 @@ func init() {
 		}
 
 		if !cfg.TransportPlugin.Enabled {
-			root = root.BuildNext(tls.Name)
+			if cfg.Reality.Enabled {
+				root = root.BuildNext(reality.Name)
+			} else {
+				root = root.BuildNext(tls.Name)
+			}
 		}
 
-		trojanSubTree := root
-		if cfg.Shadowsocks.Enabled {
-			trojanSubTree = trojanSubTree.BuildNext(shadowsocks.Name)
-		}
-		trojanSubTree.BuildNext(trojan.Name).BuildNext(mux.Name).BuildNext(simplesocks.Name).IsEndpoint = true
-		trojanSubTree.BuildNext(trojan.Name).IsEndpoint = true
+		root.BuildNext(trojan.Name).BuildNext(mux.Name).BuildNext(simplesocks.Name).IsEndpoint = true
+		root.BuildNext(trojan.Name).IsEndpoint = true
 
 		wsSubTree := root.BuildNext(websocket.Name)
-		if cfg.Shadowsocks.Enabled {
-			wsSubTree = wsSubTree.BuildNext(shadowsocks.Name)
-		}
 		wsSubTree.BuildNext(trojan.Name).BuildNext(mux.Name).BuildNext(simplesocks.Name).IsEndpoint = true
 		wsSubTree.BuildNext(trojan.Name).IsEndpoint = true
 
 		serverList := proxy.FindAllEndpoints(root)
+		if cfg.HTTP3.Enabled {
+			http3Server, err := quic.NewServer(ctx, nil)
+			if err != nil {
+				cancel()
+				return nil, err
+			}
+			http3Root := &proxy.Node{Name: quic.Name, Next: make(map[string]*proxy.Node), Context: ctx, Server: http3Server}
+			http3Root.BuildNext(trojan.Name).BuildNext(mux.Name).BuildNext(simplesocks.Name).IsEndpoint = true
+			http3Root.BuildNext(trojan.Name).IsEndpoint = true
+			serverList = append(serverList, proxy.FindAllEndpoints(http3Root)...)
+		}
 		clientList, err := proxy.CreateClientStack(ctx, clientStack)
 		if err != nil {
 			cancel()

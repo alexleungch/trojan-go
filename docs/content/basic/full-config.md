@@ -81,10 +81,16 @@ weight: 30
     "path": "",
     "host": ""
   },
-  "shadowsocks": {
+  "reality": {
     "enabled": false,
-    "method": "AES-128-GCM",
-    "password": ""
+    "fingerprint": "",
+    "server_name": "",
+    "public_key": "",
+    "short_id": "",
+    "dest": "",
+    "server_names": [],
+    "private_key": "",
+    "short_ids": []
   },
   "transport_plugin": {
     "enabled": false,
@@ -246,43 +252,41 @@ Websocket传输是trojan-go的特性。在**正常的直接连接代理节点**�
 
 ```host```Websocket握手时，HTTP请求中使用的主机名。客户端如果留空则使用```remote_addr```填充。如果使用了CDN，这个选项一般填入域名。不正确的```host```可能导致CDN无法转发请求。
 
-### ``shadowsocks`` AEAD加密选项
+### ``reality`` REALITY传输选项
 
-此选项用于替代弃用的混淆加密和双重TLS。如果此选项被设置启用，Trojan协议层下将插入一层Shadowsocks AEAD加密层。也即（已经加密的）TLS隧道内，所有的Trojan协议将再使用AEAD方法进行加密。注意，此选项和Websocket是否开启无关。无论Websocket是否开启，所有Trojan流量都会被再进行一次加密。
+此选项用于启用 XTLS/REALITY 传输协议。REALITY 可以消除服务端 TLS 指纹特征，使服务端在主动探测下表现得与目标网站一致，从而增强服务器的隐蔽性。
 
-注意，开启这个选项将有可能降低传输性能，你只应该在不信任承载Trojan协议的传输信道的情况下，启用这个选项。例如：
+```enabled```是否启用 REALITY 传输协议。
 
-- 你使用了Websocket，经过不可信的CDN进行中转（如国内CDN）
+```fingerprint```TLS 指纹伪造类型。合法的值有：
 
-- 你与服务器的连接遭到了GFW针对TLS的中间人攻击
+- ""，不使用指纹伪造
 
-- 你的证书失效，无法验证证书有效性
+- "firefox"，伪造 Firefox 指纹
 
-- 你使用了无法保证密码学安全的可插拔传输层
+- "chrome"，伪造 Chrome 指纹
 
-等等。
+- "ios"，伪造 iOS 指纹
 
-由于使用的是AEAD，trojan-go可以正确判断请求是否有效，是否遭到主动探测，并作出相应的响应。
+```server_name```客户端使用的服务器名称（SNI），用于 REALITY 客户端连接。
 
-```enabled```是否启用Shadowsocks AEAD加密Trojan协议层。
+```public_key```客户端使用的 REALITY 公钥。
 
-```method```加密方式。合法的值有：
+```short_id```客户端使用的 REALITY 短 ID。
 
-- "CHACHA20-IETF-POLY1305"
+```dest```服务端 REALITY 目标地址，即伪装的目标网站地址。
 
-- "AES-128-GCM" (默认)
+```server_names```服务端允许的服务器名称列表。
 
-- "AES-256-GCM"
+```private_key```服务端的 REALITY 私钥。
 
-```password```用于生成主密钥的密码。如果启用AEAD加密，必须确保客户端和服务端一致。
+```short_ids```服务端允许的短 ID 列表。
 
 ### ```transport_plugin```传输层插件选项
 
 ```enabled```是否启用传输层插件替代TLS传输。一旦启用传输层插件支持，trojan-go将会把**未经TLS加密的trojan协议流量明文传输给插件**，以允许用户对流量进行自定义的混淆和加密。
 
 ```type```插件类型。目前支持的类型有
-
-- "shadowsocks"，支持符合[SIP003](https://shadowsocks.org/en/spec/Plugin.html)标准的shadowsocks混淆插件。trojan-go将在启动时按照SIP003标准替换环境变量并修改自身配置(```remote_addr/remote_port/local_addr/local_port```)，使插件与远端直接通讯，而trojan-go仅监听/连接插件。
 
 - "plaintext"，使用明文传输。选择此项，trojan-go不会修改任何地址配置(```remote_addr/remote_port/local_addr/local_port```)，也不会启动```command```中插件，仅移除最底层的TLS传输层并使用TCP明文传输。此选项目的为支持nginx等接管TLS并进行分流，以及高级用户进行调试测试。**请勿直接使用明文传输模式穿透防火墙。**
 

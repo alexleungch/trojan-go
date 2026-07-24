@@ -9,6 +9,7 @@ import (
 	"github.com/p4gefau1t/trojan-go/tunnel/http"
 	"github.com/p4gefau1t/trojan-go/tunnel/mux"
 	"github.com/p4gefau1t/trojan-go/tunnel/quic"
+	"github.com/p4gefau1t/trojan-go/tunnel/reality"
 	"github.com/p4gefau1t/trojan-go/tunnel/router"
 	"github.com/p4gefau1t/trojan-go/tunnel/simplesocks"
 	"github.com/p4gefau1t/trojan-go/tunnel/socks"
@@ -21,16 +22,20 @@ import (
 const Name = "CLIENT"
 
 // GenerateClientTree generate general outbound protocol stack
-func GenerateClientTree(transportPlugin bool, muxEnabled bool, wsEnabled bool, quicEnabled bool, routerEnabled bool) []string {
-	clientStack := []string{transport.Name}
-	if !transportPlugin {
-		clientStack = append(clientStack, tls.Name)
-	}
-	if quicEnabled {
-		clientStack = append([]string{quic.Name}, clientStack...)
-	}
-	if wsEnabled {
-		clientStack = append(clientStack, websocket.Name)
+func GenerateClientTree(transportPlugin bool, muxEnabled bool, wsEnabled bool, http3Enabled bool, routerEnabled bool, realityEnabled bool) []string {
+	clientStack := []string{quic.Name}
+	if !http3Enabled {
+		clientStack = []string{transport.Name}
+		if !transportPlugin {
+			if realityEnabled {
+				clientStack = append(clientStack, reality.Name)
+			} else {
+				clientStack = append(clientStack, tls.Name)
+			}
+		}
+		if wsEnabled {
+			clientStack = append(clientStack, websocket.Name)
+		}
 	}
 	clientStack = append(clientStack, trojan.Name)
 	if muxEnabled {
@@ -62,7 +67,7 @@ func init() {
 		root.BuildNext(http.Name).IsEndpoint = true
 		root.BuildNext(socks.Name).IsEndpoint = true
 
-		clientStack := GenerateClientTree(cfg.TransportPlugin.Enabled, cfg.Mux.Enabled, cfg.Websocket.Enabled, cfg.Shadowsocks.Enabled, cfg.Router.Enabled)
+		clientStack := GenerateClientTree(cfg.TransportPlugin.Enabled, cfg.Mux.Enabled, cfg.Websocket.Enabled, cfg.HTTP3.Enabled, cfg.Router.Enabled, cfg.Reality.Enabled)
 		c, err := proxy.CreateClientStack(ctx, clientStack)
 		if err != nil {
 			cancel()

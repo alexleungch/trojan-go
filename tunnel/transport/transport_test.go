@@ -65,8 +65,8 @@ func TestClientPlugin(t *testing.T) {
 		RemotePort: 12345,
 		TransportPlugin: TransportPluginConfig{
 			Enabled: true,
-			Type:    "shadowsocks",
-			Command: "echo $SS_REMOTE_PORT",
+			Type:    "plaintext",
+			Command: "",
 			Option:  "",
 			Arg:     nil,
 			Env:     nil,
@@ -88,8 +88,8 @@ func TestServerPlugin(t *testing.T) {
 		RemotePort: 12345,
 		TransportPlugin: TransportPluginConfig{
 			Enabled: true,
-			Type:    "shadowsocks",
-			Command: "echo $SS_REMOTE_PORT",
+			Type:    "plaintext",
+			Command: "",
 			Option:  "",
 			Arg:     nil,
 			Env:     nil,

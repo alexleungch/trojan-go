@@ -1,12 +1,12 @@
 ---
-title: "使用Shadowsocks插件/可插拔传输层"
+title: "使用可插拔传输层"
 draft: false
 weight: 7
 ---
 
 ### 注意，Trojan不支持这个特性
 
-Trojan-Go支持可插拔的传输层。原则上，Trojan-Go可以使用任何有TCP隧道功能的软件作为传输层，如v2ray、shadowsocks、kcp等。同时，Trojan-Go也兼容Shadowsocks的SIP003插件标准，如GoQuiet，v2ray-plugin等。也可以使用Tor的传输层插件，如obfs4，meek等。
+Trojan-Go支持可插拔的传输层。原则上，Trojan-Go可以使用任何有TCP隧道功能的软件作为传输层，如v2ray、kcp等。Trojan-Go也兼容 SIP003 插件标准，如 GoQuiet、v2ray-plugin 等。也可以使用 Tor 的传输层插件，如 obfs4、meek 等。
 
 你可以使用这些插件，替换Trojan-Go的TLS传输层。
 
@@ -28,7 +28,7 @@ Trojan-Go支持可插拔的传输层。原则上，Trojan-Go可以使用任何�
 ...（省略）
 "transport_plugin": {
     "enabled": true,
-    "type": "shadowsocks",
+    "type": "other",
     "command": "./v2ray-plugin",
     "arg": ["-server", "-host", "www.baidu.com"]
 }
@@ -40,7 +40,7 @@ Trojan-Go支持可插拔的传输层。原则上，Trojan-Go可以使用任何�
 ...（省略）
 "transport_plugin": {
     "enabled": true,
-    "type": "shadowsocks",
+    "type": "other",
     "command": "./v2ray-plugin",
     "arg": ["-host", "www.baidu.com"]
 }

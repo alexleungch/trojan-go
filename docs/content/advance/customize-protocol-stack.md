@@ -10,9 +10,9 @@ Trojan-Go允许高级用户自定义协议栈。在自定义模式下，Trojan-G
 
 - 在一层TLS上再建立一层或更多层TLS加密
 
-- 使用TLS传输Websocket流量，在Websocket层上再建立一层TLS，在第二层TLS上再使用Shadowsocks AEAD进行加密传输
+- 使用TLS传输Websocket流量，在Websocket层上再建立一层TLS进行多层加密传输
 
-- 在TCP连接上，使用Shadowsocks的AEAD加密传输Trojan协议
+- 在TCP连接上，使用REALITY传输Trojan协议
 
 - 将一个入站Trojan的TLS流量解包后重新用TLS包装为新的出站Trojan流量
 
@@ -35,7 +35,7 @@ Trojan-Go将所有协议抽象为隧道，每个隧道可能提供客户端，�
 | trojan      | y              | n              | y            | y            | y            | y            |
 | mux         | y              | n              | y            | n            | y            | y            |
 | simplesocks | y              | n              | y            | y            | y            | y            |
-| shadowsocks | y              | n              | y            | n            | y            | y            |
+| reality     | y              | n              | y            | n            | y            | y            |
 | websocket   | y              | n              | y            | n            | y            | y            |
 | freedom     | n              | n              | y            | y            | n            | y            |
 | socks       | y              | y              | y            | y            | y            | n            |

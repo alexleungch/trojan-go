@@ -17,7 +17,7 @@ func init() {
 		cfg := config.FromContext(ctx, Name).(*client.Config)
 		ctx, cancel := context.WithCancel(ctx)
 		serverStack := []string{dokodemo.Name}
-		clientStack := client.GenerateClientTree(cfg.TransportPlugin.Enabled, cfg.Mux.Enabled, cfg.Websocket.Enabled, cfg.Shadowsocks.Enabled, cfg.Router.Enabled)
+		clientStack := client.GenerateClientTree(cfg.TransportPlugin.Enabled, cfg.Mux.Enabled, cfg.Websocket.Enabled, cfg.HTTP3.Enabled, cfg.Router.Enabled, cfg.Reality.Enabled)
 		c, err := proxy.CreateClientStack(ctx, clientStack)
 		if err != nil {
 			cancel()

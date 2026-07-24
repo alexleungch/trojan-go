@@ -146,10 +146,6 @@ websocket:
     enabled: true
     path: /ws
     host: somedomainname.com
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 mux:
     enabled: true
 `, socksPort, serverPort)
@@ -167,10 +163,6 @@ ssl:
     key: server.key
     cert: server.crt
     sni: localhost
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 websocket:
     enabled: true
     path: /ws
@@ -197,10 +189,6 @@ ssl:
     verify: false
     fingerprint: firefox
     sni: localhost
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 mux:
     enabled: true
 `, socksPort, serverPort)
@@ -218,10 +206,6 @@ ssl:
     key: server.key
     cert: server.crt
     sni: localhost
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 `, serverPort, util.HTTPPort)
 
 	if !CheckClientServer(clientData, serverData, socksPort) {
@@ -245,10 +229,6 @@ ssl:
     verify: false
     fingerprint: firefox
     sni: localhost
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 mux:
     enabled: true
 `, socksPort, serverPort)
@@ -266,10 +246,6 @@ ssl:
     key: server.key
     cert: server.crt
     sni: localhost
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 websocket:
     enabled: true
     path: /ws
@@ -296,10 +272,6 @@ password:
 transport-plugin:
     enabled: true
     type: plaintext
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 mux:
     enabled: true
 websocket:
@@ -319,10 +291,6 @@ password:
 transport-plugin:
     enabled: true
     type: plaintext
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 websocket:
     enabled: true
     path: /ws
@@ -356,10 +324,6 @@ websocket:
     enabled: true
     path: /ws
     hostname: 127.0.0.1
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 mux:
     enabled: true
 `, clientPort, serverPort, targetPort)
@@ -387,10 +351,6 @@ websocket:
     enabled: true
     path: /ws
     hostname: 127.0.0.1
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 `, serverPort, util.HTTPPort)
 	go func() {
 		proxy, err := proxy.NewProxyFromConfigData([]byte(serverData), false)
@@ -442,10 +402,6 @@ ssl:
     verify: false
     fingerprint: firefox
     sni: localhost
-shadowsocks:
-    enabled: true
-    method: AEAD_CHACHA20_POLY1305
-    password: 12345678
 mux:
     enabled: true
 api:

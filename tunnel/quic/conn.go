@@ -1,39 +1,42 @@
 package quic
 
 import (
-"net"
+	"io"
+	"net"
+	"sync"
+	"time"
 
-"github.com/quic-go/quic-go"
-
-"github.com/p4gefau1t/trojan-go/tunnel"
+	"github.com/p4gefau1t/trojan-go/tunnel"
 )
 
+type writeCloser struct{ io.Writer }
+
+func (writeCloser) Close() error { return nil }
+
+// Conn presents one full-duplex HTTP/3 request/response pair as a tunnel connection.
 type Conn struct {
-quic.Stream
-conn quic.Connection
+	reader     io.ReadCloser
+	writer     io.WriteCloser
+	localAddr  net.Addr
+	remoteAddr net.Addr
+	closeOnce  sync.Once
+	closeErr   error
 }
 
-func (c *Conn) Read(p []byte) (n int, err error) {
-return c.Stream.Read(p)
-}
-
-func (c *Conn) Write(p []byte) (n int, err error) {
-return c.Stream.Write(p)
-}
-
+func (c *Conn) Read(p []byte) (int, error)       { return c.reader.Read(p) }
+func (c *Conn) Write(p []byte) (int, error)      { return c.writer.Write(p) }
+func (c *Conn) LocalAddr() net.Addr              { return c.localAddr }
+func (c *Conn) RemoteAddr() net.Addr             { return c.remoteAddr }
+func (c *Conn) SetDeadline(time.Time) error      { return nil }
+func (c *Conn) SetReadDeadline(time.Time) error  { return nil }
+func (c *Conn) SetWriteDeadline(time.Time) error { return nil }
+func (c *Conn) Metadata() *tunnel.Metadata       { return nil }
 func (c *Conn) Close() error {
-c.Stream.CancelRead(0)
-return c.Stream.Close()
-}
-
-func (c *Conn) LocalAddr() net.Addr {
-return c.conn.LocalAddr()
-}
-
-func (c *Conn) RemoteAddr() net.Addr {
-return c.conn.RemoteAddr()
-}
-
-func (c *Conn) Metadata() *tunnel.Metadata {
-return nil
+	c.closeOnce.Do(func() {
+		c.closeErr = c.writer.Close()
+		if err := c.reader.Close(); c.closeErr == nil {
+			c.closeErr = err
+		}
+	})
+	return c.closeErr
 }

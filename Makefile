@@ -26,8 +26,7 @@ geosite.dat:
 	wget https://github.com/v2fly/domain-list-community/raw/release/dlc.dat -O geosite.dat
 
 test:
-	# Disable Bloomfilter when testing
-	SHADOWSOCKS_SF_CAPACITY="-1" $(GO_DIR)go test -v ./...
+	$(GO_DIR)go test -v ./...
 
 trojan-go:
 	mkdir -p $(BUILD_DIR)

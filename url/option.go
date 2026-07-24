@@ -25,12 +25,6 @@ type TLS struct {
 	SNI string `json:"sni"`
 }
 
-type Shadowsocks struct {
-	Enabled  bool   `json:"enabled"`
-	Method   string `json:"method"`
-	Password string `json:"password"`
-}
-
 type Mux struct {
 	Enabled bool `json:"enabled"`
 }
@@ -42,17 +36,16 @@ type API struct {
 }
 
 type UrlConfig struct {
-	RunType     string   `json:"run_type"`
-	LocalAddr   string   `json:"local_addr"`
-	LocalPort   int      `json:"local_port"`
-	RemoteAddr  string   `json:"remote_addr"`
-	RemotePort  int      `json:"remote_port"`
-	Password    []string `json:"password"`
-	Websocket   `json:"websocket"`
-	Shadowsocks `json:"shadowsocks"`
-	TLS         `json:"ssl"`
-	Mux         `json:"mux"`
-	API         `json:"api"`
+	RunType    string   `json:"run_type"`
+	LocalAddr  string   `json:"local_addr"`
+	LocalPort  int      `json:"local_port"`
+	RemoteAddr string   `json:"remote_addr"`
+	RemotePort int      `json:"remote_port"`
+	Password   []string `json:"password"`
+	Websocket  `json:"websocket"`
+	TLS        `json:"ssl"`
+	Mux        `json:"mux"`
+	API        `json:"api"`
 }
 
 type url struct {
@@ -75,18 +68,6 @@ func (u *url) Handle() error {
 	wsEnabled := false
 	if info.Type == ShareInfoTypeWebSocket {
 		wsEnabled = true
-	}
-	ssEnabled := false
-	ssPassword := ""
-	ssMethod := ""
-	if strings.HasPrefix(info.Encryption, "ss;") {
-		ssEnabled = true
-		ssConfig := strings.Split(info.Encryption[3:], ":")
-		if len(ssConfig) != 2 {
-			log.Fatalf("invalid shadowsocks config: %s", info.Encryption)
-		}
-		ssMethod = ssConfig[0]
-		ssPassword = ssConfig[1]
 	}
 	muxEnabled := false
 	listenHost := "127.0.0.1"
@@ -156,11 +137,6 @@ func (u *url) Handle() error {
 		},
 		Mux: Mux{
 			Enabled: muxEnabled,
-		},
-		Shadowsocks: Shadowsocks{
-			Enabled:  ssEnabled,
-			Password: ssPassword,
-			Method:   ssMethod,
 		},
 		API: API{
 			Enabled: apiEnabled,

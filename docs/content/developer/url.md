@@ -6,7 +6,7 @@ weight: 200
 
 ## Changelog
 
-- encryption 格式修改为 ss;method:password
+- encryption 格式修改为 none
 
 ## 概述
 
@@ -38,7 +38,7 @@ trojan-go://
     type=$(original|ws|h2|h2+ws)&
         host=$(websocket-host.com)&
         path=$(/websocket/path)&
-    encryption=$(ss;aes-256-gcm;ss-password)&
+    encryption=$(none)&
     plugin=$(...)
 #$(descriptive-text)
 ```
@@ -46,7 +46,7 @@ trojan-go://
 例如
 
 ```text
-trojan-go://password1234@google.com/?sni=microsoft.com&type=ws&host=youtube.com&path=%2Fgo&encryption=ss%3Baes-256-gcm%3Afuckgfw
+trojan-go://password1234@google.com/?sni=microsoft.com&type=ws&host=youtube.com&path=%2Fgo&encryption=none
 ```
 
 由于 Trojan-Go 兼容 Trojan，所以对于 Trojan 的 URL 方案
@@ -141,23 +141,7 @@ TLS 认证必须开启。无法使用根CA校验服务器身份的节点，不�
 
 必须使用 encodeURIComponent 编码。
 
-使用 Shadowsocks 算法进行流量加密时，其格式为：
-
-```text
-ss;method:password
-```
-
-其中 ss 是固定内容，method 是加密方法，必须为下列之一：
-
-- `aes-128-gcm`
-- `aes-256-gcm`
-- `chacha20-ietf-poly1305`
-
-其中的 `password` 是 Shadowsocks 的密码，不得为空字符串。
-`password` 中若包含分号，不需要进行转义。
-`password` 应为英文可打印 ASCII 字符。
-
-其他加密方案待定。
+加密方案待定。
 
 ### `plugin`
 

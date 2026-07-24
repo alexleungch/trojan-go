@@ -2,7 +2,7 @@
 
 使用 Go 实现的完整 Trojan 代理，兼容原版 Trojan 协议及配置文件格式。安全、高效、轻巧、易用。
 
-Trojan-Go 支持[多路复用](#多路复用)提升并发性能；使用[路由模块](#路由模块)实现国内外分流；支持 [CDN 流量中转](#Websocket)(基于 WebSocket over TLS)；支持使用 AEAD 对 Trojan 流量进行[二次加密](#aead-加密)(基于 Shadowsocks AEAD)；支持可插拔的[传输层插件](#传输层插件)，允许替换 TLS，使用其他加密隧道传输 Trojan 协议流量。
+Trojan-Go 支持[多路复用](#多路复用)提升并发性能；使用[路由模块](#路由模块)实现国内外分流；支持 [CDN 流量中转](#Websocket)(基于 WebSocket over TLS)；支持 XTLS/REALITY 传输协议；支持可插拔的[传输层插件](#传输层插件)，允许替换 TLS，使用其他加密隧道传输 Trojan 协议流量。
 
 预编译二进制可执行文件可在 [Release 页面](https://github.com/p4gefau1t/trojan-go/releases)下载。解压后即可直接运行，无其他组件依赖。
 
@@ -16,7 +16,7 @@ Trojan-Go 兼容原版 Trojan 的绝大多数功能，包括但不限于：
 
 - TLS 隧道传输
 - UDP 代理
-- 透明代理 (NAT 模式，iptables 设置参考[这里](https://github.com/shadowsocks/shadowsocks-libev/tree/v3.3.1#transparent-proxy))
+- 透明代理 (NAT 模式)
 - 对抗 GFW 被动检测 / 主动检测的机制
 - MySQL 数据持久化方案
 - MySQL 用户权限认证
@@ -33,7 +33,7 @@ Trojan-Go 兼容原版 Trojan 的绝大多数功能，包括但不限于：
 - Websocket 传输支持，以实现 CDN 流量中转（基于 WebSocket over TLS）和对抗 GFW 中间人攻击
 - TLS 指纹伪造，以对抗 GFW 针对 TLS Client Hello 的特征识别
 - 基于 gRPC 的 API 支持，以实现用户管理和速度限制等
-- 可插拔传输层，可将 TLS 替换为其他协议或明文传输，同时有完整的 Shadowsocks 混淆插件支持
+- 可插拔传输层，可将 TLS 替换为其他协议或明文传输
 - 支持对用户更友好的 YAML 配置文件格式
 
 ## 图形界面客户端
@@ -227,22 +227,23 @@ Trojan-Go 客户端内建一个简单实用的路由模块，以方便实现国�
 
 完整的选项说明参见 [Trojan-Go 文档](https://p4gefau1t.github.io/trojan-go)。
 
-### AEAD 加密
+### REALITY 传输
 
-Trojan-Go 支持基于 Shadowsocks AEAD 对 Trojan 协议流量进行二次加密，以保证 Websocket 传输流量无法被不可信的 CDN 识别和审查：
+Trojan-Go 支持 XTLS/REALITY 传输协议，可以消除服务端 TLS 指纹特征，增强服务器的隐蔽性。
 
 ```json
-"shadowsocks": {
+"reality": {
     "enabled": true,
-    "password": "my-password"
+    "fingerprint": "firefox",
+    "server_name": "www.microsoft.com",
+    "public_key": "your_public_key",
+    "short_id": "your_short_id"
 }
 ```
 
-如需开启，服务端和客户端必须同时开启并保证密码一致。
-
 ### 传输层插件
 
-Trojan-Go 支持可插拔的传输层插件，并支持 Shadowsocks [SIP003](https://shadowsocks.org/en/wiki/Plugin.html) 标准的混淆插件。下面是使用 `v2ray-plugin` 的一个例子：
+Trojan-Go 支持可插拔的传输层插件。下面是使用 `v2ray-plugin` 的一个例子：
 
 > **此配置并不安全，仅作为演示**
 
@@ -251,7 +252,7 @@ Trojan-Go 支持可插拔的传输层插件，并支持 Shadowsocks [SIP003](htt
 ```json
 "transport_plugin": {
     "enabled": true,
-    "type": "shadowsocks",
+    "type": "plaintext",
     "command": "./v2ray-plugin",
     "arg": ["-server", "-host", "www.baidu.com"]
 }
@@ -262,7 +263,7 @@ Trojan-Go 支持可插拔的传输层插件，并支持 Shadowsocks [SIP003](htt
 ```json
 "transport_plugin": {
     "enabled": true,
-    "type": "shadowsocks",
+    "type": "plaintext",
     "command": "./v2ray-plugin",
     "arg": ["-host", "www.baidu.com"]
 }

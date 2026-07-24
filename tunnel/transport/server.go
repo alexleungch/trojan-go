@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"strconv"
 	"sync"
 	"time"
 
@@ -120,29 +119,6 @@ func NewServer(ctx context.Context, _ tunnel.Server) (*Server, error) {
 	if cfg.TransportPlugin.Enabled {
 		log.Warn("transport server will use plugin and work in plain text mode")
 		switch cfg.TransportPlugin.Type {
-		case "shadowsocks":
-			trojanHost := "127.0.0.1"
-			trojanPort := common.PickPort("tcp", trojanHost)
-			cfg.TransportPlugin.Env = append(
-				cfg.TransportPlugin.Env,
-				"SS_REMOTE_HOST="+cfg.LocalHost,
-				"SS_REMOTE_PORT="+strconv.FormatInt(int64(cfg.LocalPort), 10),
-				"SS_LOCAL_HOST="+trojanHost,
-				"SS_LOCAL_PORT="+strconv.FormatInt(int64(trojanPort), 10),
-				"SS_PLUGIN_OPTIONS="+cfg.TransportPlugin.Option,
-			)
-
-			cfg.LocalHost = trojanHost
-			cfg.LocalPort = trojanPort
-			listenAddress = tunnel.NewAddressFromHostPort("tcp", cfg.LocalHost, cfg.LocalPort)
-			log.Debug("new listen address", listenAddress)
-			log.Debug("plugin env", cfg.TransportPlugin.Env)
-
-			cmd = exec.Command(cfg.TransportPlugin.Command, cfg.TransportPlugin.Arg...)
-			cmd.Env = append(cmd.Env, cfg.TransportPlugin.Env...)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stdout
-			cmd.Start()
 		case "other":
 			cmd = exec.Command(cfg.TransportPlugin.Command, cfg.TransportPlugin.Arg...)
 			cmd.Env = append(cmd.Env, cfg.TransportPlugin.Env...)

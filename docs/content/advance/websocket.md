@@ -8,7 +8,7 @@ weight: 2
 
 Trojan-Go支持使用TLS+Websocket承载Trojan协议，使得利用CDN进行流量中转成为可能。
 
-Trojan协议本身不带加密，安全性依赖外层的TLS。但流量一旦经过CDN，TLS对CDN是透明的。其服务提供者可以对TLS的明文内容进行审查。**如果你使用的是不可信任的CDN（任何在中国大陆注册备案的CDN服务均应被视为不可信任），请务必开启Shadowsocks AEAD对Webosocket流量进行加密，以避免遭到识别和审查。**
+Trojan协议本身不带加密，安全性依赖外层的TLS。但流量一旦经过CDN，TLS对CDN是透明的。其服务提供者可以对TLS的明文内容进行审查。**如果你使用的是不可信任的CDN（任何在中国大陆注册备案的CDN服务均应被视为不可信任），请务必开启 REALITY 加密对 Websocket 流量进行加密，以避免遭到识别和审查。**
 
 服务器和客户端配置文件中同时添加websocket选项，并将其```enabled```字段设置为true，并填写```path```字段和```host```字段即可启用Websocket支持。下面是一个完整的Websocket选项:
 
@@ -43,9 +43,10 @@ Trojan协议本身不带加密，安全性依赖外层的TLS。但流量一旦�
         "path": "/your-websocket-path",
         "host": "example.com"
     },
-    "shadowsocks": {
+    "reality": {
         "enabled": true,
-        "password": "12345678"
+        "fingerprint": "firefox",
+        "server_name": "www.microsoft.com"
     }
 }
 ```
